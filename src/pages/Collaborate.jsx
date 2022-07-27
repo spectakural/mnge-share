@@ -34,13 +34,17 @@ const Collaborate = () => {
       </Ripples> */}
       <div className="content">
         <div className="big">
+          The one platform to <br />
           <ReactTypingEffect
             text={["Share.", "Chat.", "Talk.", "Collaborate."]}
             speed={100}
             eraseDelay={1000}
             eraseSpeed={50}
             typingDelay={50}
-          />
+            style={{ color: "#ff4444" }}
+          />{" "}
+          <br />
+          with your team.
         </div>
       </div>
       <div className="button-area">
