@@ -6,12 +6,11 @@ import { v4 } from "uuid";
 import ReactTypingEffect from "react-typing-effect";
 
 const Collaborate = () => {
-  const [openCreate, setOpenCreate] = useState(false);
+  const [passwordBox, setPasswordBox] = useState(false);
+  const rcode = v4().slice(0, 5);
   const [currentText, setCurrentText] = useState("");
   const [currentIndex, setCurrentIndex] = useState([0, 1]);
   const words = ["Share.", "Chat.", "Talk.", "Collaborate."];
-
-  const roomId = v4().slice(0, 8);
 
   return (
     <div className="collab">
@@ -55,11 +54,9 @@ const Collaborate = () => {
           <button>Join</button>
         </div>
       </div>
-      <PasswordSetterBox
-        open={openCreate}
-        setOpenCreate={setOpenCreate}
-        rcode={roomId}
-      />
+      {passwordBox ? (
+        <PasswordSetterBox rcode={rcode} setPasswordBox={setPasswordBox} />
+      ) : null}
     </div>
   );
 };

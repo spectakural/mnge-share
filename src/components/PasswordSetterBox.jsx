@@ -1,25 +1,48 @@
 import { useState } from "react";
 import "./PasswordSetterBox.scss";
 
-const PasswordSetterBox = ({ rcode, open, setOpenCreate }) => {
+const PasswordSetterBox = ({ rcode, setPasswordBox }) => {
   const [password, setPassword] = useState("");
-  const updatePassword = (e) => {
-    setPassword(e.target.value);
-  };
+  const [nickName, setNickName] = useState("");
+
+  const startRoom = () => {};
 
   return (
-    <div
-      className={open ? "password-box-screen-active" : "password-box-screen"}
-    >
+    <div className="password-box-screen" id="password-box-screen">
       <div className="password-box">
         <div className="close" onClick={() => setOpenCreate(false)}>
           <ion-icon name="close-outline"></ion-icon>
         </div>
         <div className="password-box-header">
-          <label>Room Code</label>
-          <input type="text" value={rcode} readOnly />
-          <label>Password</label>
-          <input type="text" value={password} onChange={updatePassword} />
+          <span>
+            Room <span className="rcode">{rcode}</span>
+            <i
+              className="fa-light fa-clipboard"
+              onClick={() => {
+                navigator.clipboard.writeText(rcode);
+              }}
+            ></i>
+          </span>
+        </div>
+        <div className="password-form">
+          <span>Enter room password</span>
+          <input
+            placeholder="Enter room Password"
+            type="text"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+          />
+          <span>Enter Nick Name</span>
+          <input
+            placeholder="Enter nick name"
+            type="text"
+            onChange={(e) => setNickName(e.target.value)}
+            value={nickName}
+          />
+          <div className="buttons">
+            <button onClick={() => setPasswordBox(false)}>Cancel</button>
+            <button onClick={startRoom}>Start room!</button>
+          </div>
         </div>
       </div>
     </div>
