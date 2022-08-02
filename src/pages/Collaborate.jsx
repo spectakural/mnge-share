@@ -7,10 +7,24 @@ import ReactTypingEffect from "react-typing-effect";
 
 const Collaborate = () => {
   const [passwordBox, setPasswordBox] = useState(false);
-  const rcode = v4().slice(0, 5);
-  const [currentText, setCurrentText] = useState("");
-  const [currentIndex, setCurrentIndex] = useState([0, 1]);
-  const words = ["Share.", "Chat.", "Talk.", "Collaborate."];
+  const [rCode, setrCode] = useState(v4().slice(0, 5));
+  const [roomUniqueId, setRoomUniqueId] = useState("");
+
+  const createNewRoom = (nickName, password) => {
+    console.log(nickName, password);
+    let data = { nickName: nickName, password: password, roomId: rCode };
+    fetch("http://127.0.0.1:3300/createRoom", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        var roomId = data.roomId;
+        console.log(roomId);
+        setRoomUniqueId(roomId);
+      });
+  };
 
   return (
     <div className="collab">
@@ -34,14 +48,15 @@ const Collaborate = () => {
       </Ripples> */}
       <div className="content">
         <div className="big">
-          The one platform to <br />
+          The one stop to <br />
           <ReactTypingEffect
-            text={["Share.", "Chat.", "Talk.", "Collaborate."]}
+            text={["Share", "Chat", "Talk", "Work"]}
             speed={100}
             eraseDelay={1000}
             eraseSpeed={50}
             typingDelay={50}
             style={{ color: "#ff4444" }}
+            className="typer"
           />{" "}
           <br />
           with your team.
@@ -54,12 +69,24 @@ const Collaborate = () => {
           Create or Join <br /> a room to start..
         </div>
         <div className="buttons">
-          <button>Create</button>
-          <button>Join</button>
+          <button>
+            <Ripples color="#ff444444" onClick={() => setPasswordBox(true)}>
+              <span>Create</span>
+            </Ripples>
+          </button>
+          <button>
+            <Ripples color="#ff444444">
+              <span>Join</span>
+            </Ripples>
+          </button>
         </div>
       </div>
       {passwordBox ? (
-        <PasswordSetterBox rcode={rcode} setPasswordBox={setPasswordBox} />
+        <PasswordSetterBox
+          rCode={rCode}
+          setPasswordBox={setPasswordBox}
+          createNewRoom={createNewRoom}
+        />
       ) : null}
     </div>
   );

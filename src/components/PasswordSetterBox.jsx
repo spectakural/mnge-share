@@ -1,25 +1,27 @@
 import { useState } from "react";
 import "./PasswordSetterBox.scss";
 
-const PasswordSetterBox = ({ rcode, setPasswordBox }) => {
+const PasswordSetterBox = ({ rCode, setPasswordBox, createNewRoom }) => {
   const [password, setPassword] = useState("");
   const [nickName, setNickName] = useState("");
 
-  const startRoom = () => {};
+  const startRoom = () => {
+    createNewRoom(nickName, password);
+  };
 
   return (
     <div className="password-box-screen" id="password-box-screen">
       <div className="password-box">
-        <div className="close" onClick={() => setOpenCreate(false)}>
+        <div className="close" onClick={() => setPasswordBox(false)}>
           <ion-icon name="close-outline"></ion-icon>
         </div>
         <div className="password-box-header">
           <span>
-            Room <span className="rcode">{rcode}</span>
+            Room <span className="rcode">{rCode}</span>
             <i
               className="fa-light fa-clipboard"
               onClick={() => {
-                navigator.clipboard.writeText(rcode);
+                navigator.clipboard.writeText(rCode);
               }}
             ></i>
           </span>
