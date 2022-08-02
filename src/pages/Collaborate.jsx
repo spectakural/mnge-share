@@ -18,7 +18,13 @@ const Collaborate = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 409) {
+          alert("Room already exists");
+        } else {
+          res.json();
+        }
+      })
       .then((data) => {
         var roomId = data.roomId;
         console.log(roomId);
