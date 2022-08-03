@@ -1,0 +1,10 @@
+#root {
+  width: 100%;
+  height: calc(100% - 80px);
+  text-align: center;
+}
+.App {
+  height: 100%;
+  width: 100%;
+}
+

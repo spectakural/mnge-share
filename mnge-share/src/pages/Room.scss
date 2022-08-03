@@ -1,0 +1,14 @@
+.room-container {
+  padding-top: 10px;
+  color: black;
+  font-family: "Poppins";
+  width: 100%;
+  background-color: #a0a0a040;
+  .room-code {
+    color: red;
+    font-weight: 700;
+  }
+  .room-content {
+    background-color: white;
+  }
+}
