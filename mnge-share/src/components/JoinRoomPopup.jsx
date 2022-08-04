@@ -1,37 +1,34 @@
 import { useState } from "react";
 import "./PasswordSetterBox.scss";
 
-const PasswordSetterBox = ({
-  rCode,
-  setPasswordBox,
-  createNewRoom,
-  passwordBox,
-}) => {
+const JoinRoomPopup = ({ rCode, setJoinPopup, joinRoom, joinPopup }) => {
   const [password, setPassword] = useState("");
   const [nickName, setNickName] = useState("");
+  const [roomCode, setRoomCode] = useState("");
 
-  const startRoom = () => {
-    createNewRoom(nickName, password);
+  const handleClick = () => {
+    joinRoom(roomCode, password, nickName);
   };
 
   return (
     <div
-      className={passwordBox ? "password-box-screen" : "password-screen-screen"}
+      className={joinPopup ? "password-box-screen" : "password-screen-screen"}
       id="password-box-screen"
     >
       <div className="password-box">
         <div className="password-box-header">
           <span>
-            Room <span className="rcode">{rCode}</span>
-            <i
-              className="fa-light fa-clipboard"
-              onClick={() => {
-                navigator.clipboard.writeText(rCode);
-              }}
-            ></i>
+            <b>Join Room </b>
           </span>
         </div>
         <div className="password-form">
+          <span>Enter room Code</span>
+          <input
+            placeholder="Enter room Code"
+            type="text"
+            onChange={(e) => setRoomCode(e.target.value)}
+            value={roomCode}
+          />
           <span>Enter room password</span>
           <input
             placeholder="Enter room Password"
@@ -47,8 +44,8 @@ const PasswordSetterBox = ({
             value={nickName}
           />
           <div className="buttons">
-            <button onClick={() => setPasswordBox(false)}>Cancel</button>
-            <button onClick={startRoom}>Start room!</button>
+            <button onClick={() => setJoinPopup(false)}>Cancel</button>
+            <button onClick={handleClick}>Join room!</button>
           </div>
         </div>
       </div>
@@ -56,4 +53,4 @@ const PasswordSetterBox = ({
   );
 };
 
-export default PasswordSetterBox;
+export default JoinRoomPopup;

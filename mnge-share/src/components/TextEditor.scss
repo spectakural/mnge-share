@@ -1,31 +1,31 @@
 .text-editor-container {
-    max-height: 100%;
-    width: 50%;
-    background-color: white;
-    margin: 5px;
+  max-height: 100%;
+  width: 50%;
+  background-color: white;
+  margin: 5px;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    .text-editor-header {
-        align-self: flex-start;
-        margin: 15px;
-        margin-left: 45px;
-        font-weight: 600;
-    }
+  .text-editor-header {
+    align-self: flex-start;
+    margin: 15px;
+    margin-left: 45px;
+    font-weight: 600;
+  }
 
-    .text-editor {
-        border-radius: 20px;
-        border: 3px solid #ff000045;
-        margin-left: 45px;
-        height: 400px;
-    }
-    textarea {
-        height: 100%;
-        width: 100%;
-        box-sizing: border-box;
-        border-radius: 20px;
-        border: none;
-        padding: 10px;
-    }
+  .text-editor {
+    border-radius: 20px;
+    border: 3px solid #ff000045;
+    margin: 0 45px;
+    height: 400px;
+  }
+  textarea {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: none;
+    padding: 10px;
+  }
 }

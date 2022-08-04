@@ -2,42 +2,74 @@ import "./Collaborate.scss";
 import { useEffect, useState } from "react";
 import Ripples from "react-ripples";
 import PasswordSetterBox from "../components/PasswordSetterBox";
+import JoinRoomPopup from "../components/JoinRoomPopup";
 import { v4 } from "uuid";
 import ReactTypingEffect from "react-typing-effect";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setRoomId, setRoomCode } from "../redux/roomSlice";
-
+import { setRoomId, setRoomCode, setNickName } from "../redux/roomSlice";
+import { createRoom, joinRoom } from "../firebase/firestoreControls";
 const Collaborate = () => {
   const [passwordBox, setPasswordBox] = useState(false);
+  const [joinPopup, setJoinPopup] = useState(false);
   const [rCode, setrCode] = useState(v4().slice(0, 5));
   const [roomUniqueId, setRoomUniqueId] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const createNewRoom = (nickName, password) => {
-    console.log(nickName, password);
-    let data = { nickName: nickName, password: password, roomId: rCode };
-    fetch("http://127.0.0.1:3300/createRoom", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    }).then((res) => {
-      if (res.status == 409) {
-        alert("Room already exists");
-      } else {
-        res.json().then((data) => {
-          if (data) {
-            var roomId = data.roomId;
-            console.log("roomId", roomId);
-            setRoomUniqueId(roomId);
-            dispatch(setRoomId(roomId));
-            dispatch(setRoomCode(rCode));
-            navigate("/room");
-          }
-        });
-      }
-    });
+  const createNewRoom = async (nickName, password) => {
+    // console.log("CREATE ROOM", nickName, password);
+    // let data = { nickName: nickName, password: password, roomCode: rCode };
+    // fetch("http://127.0.0.1:3300/createRoom", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(data),
+    // }).then((res) => {
+    //   if (res.status == 409) {
+    //     alert("Room already exists");
+    //   } else {
+    //     res.json().then((data) => {
+    //       if (data) {
+    //         var roomId = data.roomId;
+    //       }
+    //     });
+    //   }
+    // });
+    let roomId = await createRoom(rCode, password);
+    setRoomUniqueId(roomId);
+    dispatch(setRoomId(roomId));
+    dispatch(setRoomCode(rCode));
+    dispatch(setNickName(nickName));
+    console.log("roomId", roomId, rCode, nickName);
+    navigate("/room");
+  };
+
+  const handleJoinRoom = async (roomCode, password, nickName) => {
+    // console.log(nickName, roomCode, password);
+    // let data = { nickName: nickName, roomCode: roomCode, password: password };
+    // fetch("http://127.0.0.1:3300/joinRoom", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(data),
+    // }).then((res) => {
+    //   if (res.status == 409) {
+    //     alert("Room does not exist");
+    //   } else {
+    //     res.json().then((data) => {
+    //       if (data) {
+    //         var roomId = data.roomId;
+    //         console.log("roomId", roomId, roomCode);
+    //       }
+    //     });
+    //   }
+    // });
+    let roomId = await joinRoom(roomCode, password);
+    console.log(roomId);
+    setRoomUniqueId(roomId);
+    dispatch(setRoomId(roomId));
+    dispatch(setRoomCode(roomCode));
+    dispatch(setNickName(nickName));
+    navigate("/room");
   };
 
   return (
@@ -89,7 +121,7 @@ const Collaborate = () => {
             </Ripples>
           </button>
           <button>
-            <Ripples color="#ff444444">
+            <Ripples color="#ff444444" onClick={() => setJoinPopup(true)}>
               <span>Join</span>
             </Ripples>
           </button>
@@ -100,6 +132,15 @@ const Collaborate = () => {
           rCode={rCode}
           setPasswordBox={setPasswordBox}
           createNewRoom={createNewRoom}
+          passwordBox={passwordBox}
+        />
+      ) : null}
+      {joinPopup ? (
+        <JoinRoomPopup
+          rCode={rCode}
+          setJoinPopup={setJoinPopup}
+          joinRoom={handleJoinRoom}
+          joinPopup={joinPopup}
         />
       ) : null}
     </div>

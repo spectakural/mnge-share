@@ -1,12 +1,15 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getFirestore, FieldValue, arrayUnion } from "firebase/firestore";
 import {
-  getFirestore,
+  doc,
   collection,
   getDocs,
   addDoc,
   QueryConstraint,
+  updateDoc,
 } from "firebase/firestore";
+
 import cors from "cors";
 import Express from "express";
 import bodyParser from "body-parser";
@@ -30,29 +33,35 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-const checkPass = async (roomid, password) => {
+const checkPass = async (roomCode, password) => {
   const query = await getDocs(collection(db, "rooms"));
+  let found = false;
   query.forEach((doc) => {
     let data = doc.data();
-    if (data.roomId == roomid && data.password == password) {
+
+    if (
+      found == false &&
+      data.roomCode == roomCode &&
+      data.password == password
+    ) {
       console.log("pass correct");
-      return true;
-    } else {
-      console.log("pass incorrect");
-      return false;
+      found = doc.id;
     }
   });
-  // console.log(query);
+  if (found) {
+    return found;
+  } else return false;
 };
 
-const checkRoomExists = async (roomId) => {
+const checkRoomExists = async (roomCode) => {
   const query = await getDocs(collection(db, "rooms"));
   var found = false;
   query.forEach((doc) => {
     let data = doc.data();
-    console.log(data.roomId);
-    if (data.roomId == roomId) {
-      console.log("room exists");
+    console.log(data.roomCode);
+    if (data.roomCode == roomCode) {
+      console.log("room exists", data.roomCode, roomCode);
+      console.log(data);
       found = true;
     }
   });
@@ -60,15 +69,27 @@ const checkRoomExists = async (roomId) => {
   return found;
 };
 
-const createRoom = async (roomId, password) => {
+const createRoom = async (roomCode, password) => {
   try {
     const room = await addDoc(collection(db, "rooms"), {
       password: password,
-      roomId: roomId,
-      uniqueId: "9823u29rwxvcnl2934",
+      roomCode: roomCode,
+      members: [],
+      messages: [],
     });
     console.log("Document", room.id);
     return room.id;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const joinRoom = async (roomCode, password) => {
+  try {
+    const room = await checkPass(roomCode, password);
+    if (room) {
+      return room;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -78,10 +99,22 @@ express.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// const sendMessage = async (message, roomId) => {
+//   let docRef = doc(collection(db, "rooms"), roomId);
+
+//   message["timestamp"] = new Date();
+
+//   console.log("messageData", message, FieldValue);
+//   await updateDoc(docRef, {
+//     // messages: FieldValue.arrayUnion(message),
+//     messages: arrayUnion(message),
+//   });
+// };
+
 express.post("/createRoom", jsonParser, async (req, res) => {
   console.log(req.body);
-  const roomId = req.body.roomId;
-  let result = await checkRoomExists(roomId);
+  const roomCode = req.body.roomCode;
+  let result = await checkRoomExists(roomCode);
   if (result) {
     console.log("Room already exists");
     res.sendStatus(409);
@@ -89,12 +122,37 @@ express.post("/createRoom", jsonParser, async (req, res) => {
   } else {
     console.log("Should not print");
     const password = req.body.password;
-    const room = await createRoom(roomId, password);
+    const room = await createRoom(roomCode, password);
 
     console.log("creating error");
 
-    console.log(room, roomId, password);
+    console.log(room, roomCode, password);
     res.send({ roomId: room });
+  }
+});
+
+express.post("/joinRoom", jsonParser, async (req, res) => {
+  console.log(req.body);
+  const roomCode = req.body.roomCode;
+  const password = req.body.password;
+  const room = await joinRoom(roomCode, password);
+  if (room) {
+    res.send({ roomId: room });
+  } else {
+    res.sendStatus(409);
+  }
+});
+
+express.post("/sendMessage", jsonParser, async (req, res) => {
+  console.log(req.body);
+  const roomId = req.body.roomId;
+  const message = req.body.message;
+  try {
+    await sendMessage(message, roomId);
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
   }
 });
 
