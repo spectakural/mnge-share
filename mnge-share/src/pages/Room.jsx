@@ -6,6 +6,9 @@ import ChatBox from "../components/ChatBox";
 import Chat from "../components/Chat";
 import { useSelector, useDispatch } from "react-redux";
 import { initializeApp } from "firebase/app";
+
+import axios from "axios";
+
 import {
   getFirestore,
   collection,
@@ -20,6 +23,8 @@ import {
 import { sendMessage, updateText } from "../firebase/firestoreControls";
 
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCI_CwbS_Z3dqchn31208csxB8wr97xRXM",
@@ -38,10 +43,13 @@ const Room = () => {
   const rCode = useSelector((state) => state.room.roomCode);
   const roomId = useSelector((state) => state.room.roomId);
   const nickName = useSelector((state) => state.room.nickName);
-  // const messagesRef = collection(firestore, "rooms");
+  const navigate = useNavigate();
+
   const docRef = doc(firestore, "rooms", roomId);
   console.log("roomId", roomId);
   const [roomData, loading, error, snapshot] = useDocumentData(docRef);
+
+  // const messagesRef = collection(firestore, "rooms");
 
   const handleSendMessage = (message) => {
     let messageData = {
@@ -57,6 +65,15 @@ const Room = () => {
     updateText(text, roomId);
   };
 
+  const handleUpload = (e) => {
+    console.log("upload", e.target.value, e.target.files[0].size / 1024 / 1024);
+    let formData = new FormData();
+    formData.append("file", e.target.files[0]);
+    formData.append("roomId", roomId);
+
+    axios.post("http://127.0.0.1:3300/createRoomStorage", formData);
+  };
+
   return (
     <div className="room-container">
       <div className="room-header">
@@ -65,9 +82,13 @@ const Room = () => {
         <span className="room-code">{" " + rCode}</span>
       </div>
       <div className="room-content">
-        {!loading && (
+        {/* {!loading && (
           <TextEditor updateText={handleUpdateText} roomData={roomData} />
-        )}
+        )} */}
+        <div className="input">
+          <label htmlFor="file-input">DRAG ON ME</label>
+          <input type="file" id="file-input" onChange={handleUpload} />
+        </div>
         <ChatBox sendMessage={handleSendMessage}>
           {!loading &&
             roomData.messages.map((message, index) => (
