@@ -1,62 +1,66 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getFirestore, FieldValue, arrayUnion } from "firebase/firestore";
-import {
-  doc,
-  collection,
-  getDocs,
-  addDoc,
-  QueryConstraint,
-  updateDoc,
-} from "firebase/firestore";
-import fetch from "node-fetch";
 import multer from "multer";
 import cors from "cors";
 import Express from "express";
 import bodyParser from "body-parser";
-import axios from "axios";
+
+import fs from "fs";
 
 const express = Express();
 const port = 3300;
 express.use(cors());
 const jsonParser = bodyParser.json();
-const Multer = multer();
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCI_CwbS_Z3dqchn31208csxB8wr97xRXM",
-//   authDomain: "mnge-share.firebaseapp.com",
-//   projectId: "mnge-share",
-//   storageBucket: "mnge-share.appspot.com",
-//   messagingSenderId: "24439804679",
-//   appId: "1:24439804679:web:3d3e37d8c34925d7ea2ba2",
-// };
 
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
 
-// const db = getFirestore(app);
+const upload = multer({ storage: storage });
 
-express.post(
-  "/createRoomStorage",
-  multer({ dest: "uploads/" }).single("file"),
-  async (req, res) => {
-    // const formData = req.body;
-    console.log(req.body, req.file);
-    axios.post("http://127.0.0.1:5000/createStorage", {
-      roomId: req.body.roomId,
-      file: req.file,
-    });
-    // fetch("http://127.0.0.1:5000/createStorage", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     roomId: roomId,
-    //     file: file,
-    //   }),
-    // });
+express.post("/createRoomStorage", jsonParser, async (req, res) => {
+  console.log(req.body);
+  const roomId = req.body.roomId;
+  console.log(roomId, fs.existsSync(`uploads/${roomId}`));
+
+  if (roomId != undefined && !fs.existsSync(`./uploads/${roomId}`)) {
+    console.log("making dir");
+    fs.mkdirSync(`./uploads/${roomId}`);
   }
-);
+});
+
+express.post("/uploadFile", upload.single("file"), async (req, res) => {
+  let path = req.file.path.replace(/\\/g, "/");
+  console.log(req.body, path);
+  fs.rename(
+    path,
+    `./uploads/${req.body.roomId}/${req.file.originalname}`,
+    (err) => {
+      if (err) throw err;
+      console.log("moved actually");
+    }
+  );
+  res.send({ status: 200 });
+});
+
+express.post("/getFiles", jsonParser, async (req, res) => {
+  const roomId = req.body.roomId;
+  console.log(req.body);
+  const files = fs.readdirSync(`./uploads/${roomId}`);
+  console.log(files);
+  res.send(files);
+});
+
+express.post("/downloadFile", jsonParser, async (req, res) => {
+  const roomId = req.body.roomId;
+  const fileName = req.body.fileName;
+  console.log(req.body);
+  // const file = fs.readFileSync(`./uploads/${roomId}/${fileName}`);
+  res.download(`./uploads/${roomId}/${fileName}`);
+});
 
 express.post("/joinRoom", jsonParser, async (req, res) => {
   console.log(req.body);

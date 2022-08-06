@@ -1,8 +1,10 @@
 import { useState } from "react";
 import "./ChatBox.scss";
+import axios from "axios";
 
-const ChatBox = ({ children, sendMessage }) => {
+const ChatBox = ({ children, sendMessage, uploadFile }) => {
   const [message, setMessage] = useState("");
+
   return (
     <div className="chatbox-container">
       <div className="chatbox-header">
@@ -11,6 +13,15 @@ const ChatBox = ({ children, sendMessage }) => {
       <div className="chatbox-content">
         <div className="chats">{children}</div>
         <div className="input-box">
+          <label for="file">
+            <ion-icon name="attach"></ion-icon>
+          </label>
+          <input
+            type="file"
+            id="file"
+            style={{ display: "none" }}
+            onChange={uploadFile}
+          />
           <input
             type="text"
             placeholder="Type your message here..."
@@ -29,7 +40,7 @@ const ChatBox = ({ children, sendMessage }) => {
               setMessage("");
             }}
           >
-            Send
+            <ion-icon name="send"></ion-icon>
           </button>
         </div>
       </div>

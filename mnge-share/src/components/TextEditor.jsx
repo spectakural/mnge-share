@@ -5,12 +5,11 @@ import { useEffect } from "react";
 
 const TextEditor = ({ updateText, roomData }) => {
   const [text, setText] = useState("");
-  const [timer, setTimer] = useState(null);
   const [cursor, setCursor] = useState(0);
+  const textEditor = useRef(null);
 
   useEffect(() => {
-    console.log(document.getElementById("text-editor"));
-    document.getElementById("text-editor").setSelectionRange(cursor, cursor);
+    textEditor.current.setSelectionRange(cursor, cursor);
   }, [roomData]);
 
   const handleChange = (e) => {
@@ -33,6 +32,7 @@ const TextEditor = ({ updateText, roomData }) => {
           placeholder="Start typing here..."
           value={roomData.texteditor}
           onChange={handleChange}
+          ref={textEditor}
         ></textarea>
       </div>
     </div>

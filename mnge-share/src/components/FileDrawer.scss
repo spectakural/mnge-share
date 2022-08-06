@@ -1,0 +1,47 @@
+.fileDrawer {
+  height: 80vh;
+  width: 30%;
+  border-radius: 20px 0 20px 20px;
+  clip-path: circle(20% at 100% 0);
+  position: absolute;
+  top: 60;
+  right: 0;
+  z-index: 3;
+  transition: all 0.3s;
+  background: #ffbaba50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  h3 {
+  }
+  &:hover {
+    clip-path: circle(142.2% at 100% 0);
+    .file-icon {
+      opacity: 0%;
+      transition: 0.3s;
+    }
+  }
+  .file-icon {
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 40px;
+    color: #ff3737;
+    transition: all 0.3s;
+  }
+  .fileContainer {
+    background: #00454510;
+    width: 70%;
+    height: 70%;
+    align-self: center;
+  }
+}
+
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  .fileDrawer:hover {
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+}
