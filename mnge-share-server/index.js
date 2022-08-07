@@ -55,9 +55,9 @@ express.post("/getFiles", jsonParser, async (req, res) => {
 });
 
 express.post("/downloadFile", jsonParser, async (req, res) => {
-  const roomId = req.body.roomId;
-  const fileName = req.body.fileName;
-  console.log(req.body);
+  let roomId = req.body.roomId;
+  let fileName = req.body.fileName;
+  console.log(roomId, fileName, "checking");
   // const file = fs.readFileSync(`./uploads/${roomId}/${fileName}`);
   res.download(`./uploads/${roomId}/${fileName}`);
 });

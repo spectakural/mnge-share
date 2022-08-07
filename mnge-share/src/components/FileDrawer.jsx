@@ -17,19 +17,18 @@ const FileDrawer = () => {
     setFiles(res.data);
   };
 
-  const downloadFile = async (file) => {
+  const downloadFile = async (fileName) => {
     const res = await axios.post("http://localhost:3300/downloadFile", {
-      fileName: file,
+      fileName: fileName,
       roomId: roomId,
     });
-    axios({
-      method: "post",
-      url: "http://localhost:3300/downloadFile",
-      responseType: "blob",
-      headers: {},
-      body: { roomId: roomId, fileName: file },
-    })
+    axios
+      .post("http://localhost:3300/downloadFile", {
+        roomId: roomId,
+        fileName: fileName,
+      })
       .then((res) => {
+        console.log(res.data);
         const url = window.URL.createObjectURL(new Blob([res.data]));
         const link = document.createElement("a");
         link.href = url;
