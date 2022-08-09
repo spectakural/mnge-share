@@ -2,10 +2,12 @@ import multer from "multer";
 import cors from "cors";
 import Express from "express";
 import bodyParser from "body-parser";
-
+import { Server } from "socket.io";
+import { createServer } from "http";
 import fs from "fs";
 
 const express = Express();
+const httpServer = createServer(express);
 const port = 3300;
 express.use(cors());
 const jsonParser = bodyParser.json();
@@ -87,6 +89,31 @@ express.post("/sendMessage", jsonParser, async (req, res) => {
   }
 });
 
-express.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+// express.listen(port, () => {
+//   console.log(`Example app listening at http://localhost:${port}`);
+// });
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
 });
+
+io.on("connection", (socket) => {
+  console.log("a user connected", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+  socket.on("joinRoom", (roomId) => {
+    console.log("join room", roomId);
+    socket.join(roomId);
+  });
+  socket.on("leaveRoom", (roomId) => {
+    console.log("leave room", roomId);
+    socket.leave(roomId);
+  });
+});
+
+// io.listen(3300);
+httpServer.listen(3300);

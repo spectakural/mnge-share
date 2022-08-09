@@ -26,6 +26,7 @@ import { sendMessage, updateText } from "../firebase/firestoreControls";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import io from "socket.io-client";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCI_CwbS_Z3dqchn31208csxB8wr97xRXM",
@@ -35,7 +36,7 @@ const firebaseConfig = {
   messagingSenderId: "24439804679",
   appId: "1:24439804679:web:3d3e37d8c34925d7ea2ba2",
 };
-
+const socket = io.connect("http://127.0.0.1:3300");
 const fire = initializeApp(firebaseConfig);
 const firestore = getFirestore(fire);
 
@@ -51,6 +52,16 @@ const Room = () => {
   const [roomData, loading, error, snapshot] = useDocumentData(docRef);
   const [prevMessages, setPrevMessages] = useState([]);
   // const messagesRef = collection(firestore, "rooms");
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
+  useEffect(() => {
+    console.log("use effecting");
+    socket.on("connect", () => {
+      setIsConnected(true);
+      console.log("connected");
+      console.log(socket.id);
+    });
+  }, []);
 
   useEffect(() => {
     try {

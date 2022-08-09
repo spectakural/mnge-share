@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./FileDrawer.scss";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { createRoutesFromChildren } from "react-router-dom";
+// import { createRoutesFromChildren } from "react-router-dom";
+
 const FileDrawer = () => {
   const roomId = useSelector((state) => state.room.roomId);
   const [files, setFiles] = useState([]);
